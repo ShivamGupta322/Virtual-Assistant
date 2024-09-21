@@ -1,7 +1,8 @@
 let btn=document.querySelector("#btn");
 let content=document.querySelector("#content");
 let voice = document.querySelector("#voice");
-
+// const apiKey = "1dbe796b2bf5daa6be3224e4e5b1b6ef";
+// const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
 function speak(text){
     let text_speak=new SpeechSynthesisUtterance(text);
     text_speak.rate=1;
@@ -54,13 +55,17 @@ function takeCommand(message){
     if(message.includes("hello") || message.includes("Hey") ){
         speak("Hello Sir, How can i Help You!");
     }
-    else if(message.includes("Who are you")){
+    else if(message.includes("what is your name")){
+        speak("My name is Shifra and I am a Virtual asistant developed by Shivam");
+    }
+    else if(message.includes("Who are you") || message.includes("hu r u")){
         speak("I'm a Virtual Assistant, developed by Shivam Gupta. I can help you with various tasks like searching, weather forecast, playing music, and more.");
     }
 
-    else if(message.includes("open Youtube")){
-        speak("Opening Youtube in your browser...");
+    else if(message.includes("open youtube")){
+        
         window.open("https://www.youtube.com/","_blank");
+        speak("Opening Youtube in your browser...");
     }
 
     else if(message.includes("open Google")){
@@ -85,9 +90,13 @@ function takeCommand(message){
         window.open("https://www.github.com/","_blank");
     }
      
-     else if(message.includes("take me to your developer's instagram account")){
+     else if(message.includes("take me to your developers instagram account")){
         speak("Here we go");
         window.open("https://www.instagram.com/shivamgupta322/","_blank");
+    }
+    else if(message.includes("take me to poorva instagram account") || message.includes("take me to purva instagram account")){
+        speak("Here we go");
+        window.open("https://www.instagram.com/its_angel9756/","_blank");
     }
 
      else if(message.includes("take me to your developer's github account")){
@@ -113,13 +122,19 @@ function takeCommand(message){
         window.open("https://www.youtube.com/results?search_query=music");
     }
 
+    else if(message.includes("play tarak mehta") || message.includes("Taarak Mehta")){
+        speak("taking you there");
+        window.open("https://www.youtube.com/watch?v=44nn4MwJ6h0");
+    }
+
     else if(message.includes("time")){
         let time = new Date().toLocaleString(undefined,{hour:"numeric",minute:"numeric",second:"numeric"});
-        speak("The current time is "+time);
+        speak(time);
     }
-    else if(message.includes("time")){
-        let date = new Date().toLocaleString(undefined,{day:"numeric",month:"short"});
-        speak("The current time is "+time);
+    else if(message.includes("date")){
+        let date = new Date().toLocaleString(undefined,{day:"numeric",month:"short",year:"numeric"});
+        // console.log(Date());
+        speak("aaj ki date hai"+date);
     }
 
     // else if(message.includes("search")){
@@ -127,18 +142,43 @@ function takeCommand(message){
     //     speak("Searching for "+searchQuery+"...");
     //     window.open("https://www.google.com/search?q="+searchQuery,"_blank");
     // }
-    else if(message.includes("weather")){
-        let city=message.split("weather")[1].trim();
-        speak("Fetching weather for "+city+"...");
-        fetch("https://api.openweathermap.org/data/2.5/weather?q="+city+"&appid=your_api_key")
-       .then(response=>response.json())
-       .then(data=>{
-            let temp=Math.floor(data.main.temp-273.15);
-            let description=data.weather[0].description;
-            speak("The weather in "+city+" is "+description+". Temperature is "+temp+"°C");
+
+    
+    // else if(message.includes("weather")){
+    //     let city=message.split("weather")[1].trim();
+    //     speak(`Fetching weather for ${city}...`);
+    //     fetch(`${apiUrl}${city}&appid=${apiKey}`)
+    //    .then(response=>response.json())
+    //    .then(data=>{
+    //         let temp=data.main.temp;
+    //         let weather=data.weather[0].description;
+    //         speak(`In ${city}, the current temperature is ${temp}°C and the weather is ${weather}.`);
+    //     })
+    //     .catch(error=>speak("Error fetching weather data!"));
+    // }
+
+
+    else if(message.includes("weather")) {
+        let city = message.split("weather in")[1].trim();
+        speak(`Fetching weather for ${city}...`);
+        console.log(`City: ${city}`);
+    
+        fetch(`https://api.openweathermap.org/data/2.5/weather?units=metric&q=${city}&appid=1dbe796b2bf5daa6be3224e4e5b1b6ef`)
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to fetch weather");
+            return response.json();
         })
-       .catch(error=>speak("Error fetching weather data!"));
+        .then(data => {
+            let temp = Math.round(data.main.temp);
+            let weather = data.weather[0].description;
+            speak(`In ${city}, the current temperature is ${temp}°C and the weather is ${weather}.`);
+        })
+        .catch(error => {
+            console.error("Error fetching weather data: ", error);
+            speak("Error fetching weather data!");
+        });
     }
+    
     else{
         speak(`This is what i found on internet regarding ${message.replace("shifra","") || message.replace("shipra","")}`)
         window.open(`https://www.google.com/search?q=${message.replace("shifra","") || message.replace("shipra","")}`,"_blank");
